@@ -1,0 +1,40 @@
+name: agendometro
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.2.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.1.0  
+  flutter_lints: ^2.0.0
+  intl: ^0.18.0
+  path_provider: ^2.0.11
+  encrypt: ^5.0.0
+  crypto: ^3.0.1
+  shared_preferences: ^2.0.6
+  table_calendar: ^3.0.9
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/loggo.png" # Cambia por la ruta de tu logo
+  #adaptive_icon_background: "#ffffff" # Fondo para Android
+  #adaptive_icon_foreground: "assets/icon/app_icon_foreground.png" # Foreground (Android 8+)
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/
