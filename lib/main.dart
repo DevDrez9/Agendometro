@@ -19,7 +19,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       //home: SplashScreen(),
-      title: 'Flutter Demo',
+      title: 'Life Clinica estetica',
       initialRoute: 'splash',
       debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{

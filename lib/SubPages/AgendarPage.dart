@@ -20,6 +20,7 @@ import 'package:agendometro/Widgets/CustomDropdown.dart';
 import 'package:agendometro/Widgets/DatePicker.dart';
 import 'package:agendometro/Widgets/DropdownHoras.dart';
 import 'package:agendometro/Widgets/Pagar.dart';
+import 'package:agendometro/Widgets/PagarCronograma.dart';
 import 'package:agendometro/Widgets/textInput.dart';
 import 'package:flutter/material.dart';
 import 'package:http/io_client.dart';
@@ -49,6 +50,7 @@ class _AgendarPageState extends State<AgendarPage> {
 
   List<List<String>> listaHorasPorSesion = [];
   List<DtoSchedule> listaCitas = [];
+  List<Pago> listaPagos = [];
 
   bool validarCitas = false;
 
@@ -230,27 +232,13 @@ class _AgendarPageState extends State<AgendarPage> {
             labelText: "Monto a Pagar",
             isNumberOnly: true,
             icon: Icons.monetization_on,
-            isValidatorEnabled: false),
+            isValidatorEnabled: false,
+            onChanged: (value) {}),
 
         SizedBox(
           height: 10,
         ),
-        /* SecondaryButton(
-            text: "Pagar",
-            onPressed: () {
-              if (_formKeyAgendar.currentState!.validate()) {
-                setState(() async {
-                  pagarSelect = (await showFullScreenPagar(
-                      context,
-                      servicioSelect.serviceName,
-                      "${especialistaSelect.person.nombre} ${especialistaSelect.person.apellidoPaterno}",
-                      "${clienteSelect.nombre} ${clienteSelect.apellidoPaterno}",
-                      controllerPrecio.text,
-                      0))!;
-                  print(pagarSelect.monto);
-                });
-              }
-            }),*/
+
         SizedBox(
           height: 10,
         ),
@@ -292,8 +280,22 @@ class _AgendarPageState extends State<AgendarPage> {
                       pagos: listaPago);
 
                   print(crearCita.toJson().toString());
-
-                  guardarCita(crearCita);
+                  if (double.parse(controllerPagar.text) <
+                      double.parse(controllerPrecio.text)) {
+                    showFullScreenCronogramaAccion(
+                        context,
+                        servicioSelect.serviceName,
+                        especialistaSelect.person.nombre +
+                            " " +
+                            especialistaSelect.person.apellidoPaterno,
+                        clienteSelect.nombre +
+                            " " +
+                            clienteSelect.apellidoPaterno,
+                        controllerPrecio.text,
+                        crearCita);
+                  } else {
+                    guardarCita(crearCita);
+                  }
                 } else {
                   setState(() {
                     validarCitas = true;
