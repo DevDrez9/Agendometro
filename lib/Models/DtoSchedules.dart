@@ -8,16 +8,17 @@ class CustomerServiceRequest {
   double price;
   int sessions;
   List<Pago> pagos;
+  List<Cuota> cuotas;
 
-  CustomerServiceRequest({
-    required this.customerId,
-    required this.serviceId,
-    required this.dtoSchedules,
-    required this.progressState,
-    required this.price,
-    required this.sessions,
-    required this.pagos,
-  });
+  CustomerServiceRequest(
+      {required this.customerId,
+      required this.serviceId,
+      required this.dtoSchedules,
+      required this.progressState,
+      required this.price,
+      required this.sessions,
+      required this.pagos,
+      required this.cuotas});
 
   // Método toJson
   Map<String, dynamic> toJson() {
@@ -30,6 +31,7 @@ class CustomerServiceRequest {
       'price': price,
       'sessions': sessions,
       'pagos': pagos.map((pago) => pago.toJson()).toList(),
+      'cuotas': cuotas.map((cuota) => cuota.toJson()).toList(),
     };
   }
 }
@@ -70,13 +72,12 @@ class DtoSchedule {
 
 class Pago {
   String fecha;
-  String tipo;
+
   double monto;
   List<FormaPago> formaPagos;
 
   Pago({
     required this.fecha,
-    required this.tipo,
     required this.monto,
     required this.formaPagos,
   });
@@ -85,7 +86,6 @@ class Pago {
   Map<String, dynamic> toJson() {
     return {
       'fecha': fecha,
-      'tipo': tipo,
       'monto': monto,
       'formaPagos': formaPagos.map((formaPago) => formaPago.toJson()).toList(),
     };
@@ -106,6 +106,23 @@ class FormaPago {
     return {
       'tipo': tipo,
       'monto': monto,
+    };
+  }
+}
+
+class Cuota {
+  String fecha;
+  double montoCuota;
+  bool pagado;
+
+  Cuota({required this.fecha, required this.montoCuota, required this.pagado});
+
+  // Método toJson
+  Map<String, dynamic> toJson() {
+    return {
+      'fecha': fecha,
+      'tipo': montoCuota,
+      'monto': pagado,
     };
   }
 }

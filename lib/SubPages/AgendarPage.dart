@@ -16,6 +16,7 @@ import 'package:agendometro/Widgets/BotonSegundario.dart';
 import 'package:agendometro/Widgets/BuscadorClientes.dart';
 import 'package:agendometro/Widgets/BuscadorEspecialistas.dart';
 import 'package:agendometro/Widgets/BuscadorServicios.dart';
+import 'package:agendometro/Widgets/CronogramaPagar.dart';
 import 'package:agendometro/Widgets/CustomDropdown.dart';
 import 'package:agendometro/Widgets/DatePicker.dart';
 import 'package:agendometro/Widgets/DropdownHoras.dart';
@@ -264,9 +265,12 @@ class _AgendarPageState extends State<AgendarPage> {
                   if (!controllerPagar.text.isEmpty) {
                     Pago pagarSelect = Pago(
                         fecha: listaCitas[0].scheduleStartTime,
-                        tipo: "",
                         monto: double.parse(controllerPagar.text),
-                        formaPagos: []);
+                        formaPagos: [
+                          FormaPago(
+                              tipo: "CON",
+                              monto: double.parse(controllerPagar.text))
+                        ]);
                     listaPago.add(pagarSelect);
                   }
 
@@ -277,22 +281,14 @@ class _AgendarPageState extends State<AgendarPage> {
                       progressState: 0,
                       price: double.parse(controllerPrecio.value.text),
                       sessions: int.parse(controllerSesiones.text),
-                      pagos: listaPago);
+                      pagos: listaPago,
+                      cuotas: []);
 
                   print(crearCita.toJson().toString());
                   if (double.parse(controllerPagar.text) <
                       double.parse(controllerPrecio.text)) {
-                    showFullScreenCronogramaAccion(
-                        context,
-                        servicioSelect.serviceName,
-                        especialistaSelect.person.nombre +
-                            " " +
-                            especialistaSelect.person.apellidoPaterno,
-                        clienteSelect.nombre +
-                            " " +
-                            clienteSelect.apellidoPaterno,
-                        controllerPrecio.text,
-                        crearCita);
+                    LoadingDialog.hideLoadingDialog(context);
+                    CronogramaPagar(context, controllerPrecio.text, crearCita);
                   } else {
                     guardarCita(crearCita);
                   }

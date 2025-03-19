@@ -15,6 +15,18 @@ showFullScreenCronogramaAccion(
   TextEditingController montoPagoController = TextEditingController();
   final _formKeyPago = GlobalKey<FormState>();
 
+  int sesiones = customer.sessions;
+
+  List<Cuota> listaCuotas = [];
+  for (var sesion in customer.dtoSchedules) {
+    listaCuotas.add(
+        Cuota(fecha: sesion.scheduleStartTime, montoCuota: 0, pagado: false));
+  }
+  listaCuotas[0].montoCuota = customer.pagos[0].monto;
+  listaCuotas[0].pagado = true;
+
+  bool estado = false;
+
   return showDialog(
     context: context,
     barrierDismissible: true, // Evita que se cierre al tocar fuera
@@ -38,7 +50,7 @@ showFullScreenCronogramaAccion(
                     ),
                     Center(
                       child: Text(
-                        "Realizar Pago",
+                        "Cronograma de Pago",
                         style: AppTextStyles.title,
                       ),
                     ),
@@ -46,32 +58,7 @@ showFullScreenCronogramaAccion(
                       height: 20,
                     ),
                     Container(
-                        width: 280,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                servicio,
-                                style: AppTextStyles.subtitleDark,
-                              ),
-                              Text(
-                                cliente,
-                                style: AppTextStyles.bodyDark,
-                              ),
-                              Text(
-                                especialista,
-                                style: AppTextStyles.bodyDark,
-                              ),
-                              Text(
-                                "Fecha",
-                                style: AppTextStyles.captionDark,
-                              ),
-                              SizedBox(
-                                height: 20,
-                              )
-                            ])),
-                    Container(
-                        width: 200,
+                        width: 250,
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -89,48 +76,75 @@ showFullScreenCronogramaAccion(
                                   )
                                 ],
                               ),
-                              Container(
-                                width: 200,
-                                height: 2,
-                                color: Colors.black,
-                                margin: EdgeInsets.symmetric(vertical: 10),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Saldo",
-                                    style: AppTextStyles.subtitleDark,
-                                  ),
-                                  Text(
-                                    "$total Bs",
-                                    style: AppTextStyles.subtitleDark,
-                                  )
-                                ],
-                              ),
                             ])),
                     Form(
                         key: _formKeyPago,
                         child: Container(
-                          width: 200,
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  textInput2(
-                                      controller: montoPagoController,
-                                      labelText: "Monto a pagar",
-                                      icon: Icons.attach_money_outlined,
-                                      horizontal: 180,
-                                      isNumberOnly: true)
-                                ],
-                              ),
-                            ],
-                          ),
-                        ))
+                            width: 250,
+                            child: Column(
+                              children: List.generate(sesiones, (index) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text("Sesion ${index + 1}"),
+                                    index == 0
+                                        ? textInput2(
+                                            enabled: false,
+                                            labelText: customer.pagos[0].monto
+                                                .toString(),
+                                            icon: Icons.attach_money_outlined,
+                                            horizontal: 100,
+                                            isNumberOnly: true,
+                                            onChanged: (value) {
+                                              listaCuotas[index].montoCuota =
+                                                  double.parse(value);
+                                            })
+                                        : textInput2(
+                                            labelText: "Monto a pagar",
+                                            icon: Icons.attach_money_outlined,
+                                            horizontal: 100,
+                                            isNumberOnly: true,
+                                            onChanged: (value) {
+                                              listaCuotas[index].montoCuota =
+                                                  double.parse(value);
+                                            })
+                                  ],
+                                );
+                              }),
+                            )))
                   ],
                 ),
+                /* Container(
+                    width: 250,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Saldo",
+                          style: AppTextStyles.subtitleDark,
+                        ),
+                        Text(
+                          "$total Bs",
+                          style: AppTextStyles.subtitleDark,
+                        )
+                      ],
+                    )),*/
+                estado == false
+                    ? Container()
+                    : Container(
+                        width: 250,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(50, 230, 57, 71),
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        child: Text(
+                          "Debe completar a $total",
+                          style: TextStyle(color: AppThemeColors.error),
+                        ),
+                      ),
                 Container(
                     width: 350,
                     margin: EdgeInsets.only(bottom: 50),
@@ -139,28 +153,25 @@ showFullScreenCronogramaAccion(
                       children: [
                         BotonSeccion(
                           onPressed: () {
-                            Navigator.pop(
-                                context,
-                                Pago(
-                                    fecha: "",
-                                    tipo: "",
-                                    monto: 0,
-                                    formaPagos: []));
+                            Navigator.pop(context,
+                                Pago(fecha: "", monto: 0, formaPagos: []));
                           },
                           color: AppThemeColors.error,
                           text: "Cancelar",
                         ),
                         BotonSeccion(
                           onPressed: () {
-                            if (_formKeyPago.currentState!.validate()) {
-                              Navigator.pop(
-                                  context,
-                                  Pago(
-                                      fecha: "",
-                                      tipo: "",
-                                      monto: double.parse(
-                                          montoPagoController.text),
-                                      formaPagos: []));
+                            double precio = customer.price;
+                            double total = 0;
+
+                            for (var cuota in listaCuotas) {
+                              total = total + cuota.montoCuota;
+                            }
+                            if (precio == total) {
+                              print("Servicio");
+                            } else {
+                              print("Falta $precio $total");
+                              estado != estado;
                             }
                           },
                           color: AppThemeColors.pago,

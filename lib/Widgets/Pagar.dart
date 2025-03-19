@@ -146,13 +146,8 @@ Future<Pago?> showFullScreenPagar(BuildContext context, String servicio,
                       children: [
                         BotonSeccion(
                           onPressed: () {
-                            Navigator.pop(
-                                context,
-                                Pago(
-                                    fecha: "",
-                                    tipo: "",
-                                    monto: 0,
-                                    formaPagos: []));
+                            Navigator.pop(context,
+                                Pago(fecha: "", monto: 0, formaPagos: []));
                           },
                           color: AppThemeColors.error,
                           text: "Cancelar",
@@ -164,7 +159,6 @@ Future<Pago?> showFullScreenPagar(BuildContext context, String servicio,
                                   context,
                                   Pago(
                                       fecha: "",
-                                      tipo: "",
                                       monto: double.parse(
                                           montoPagoController.text),
                                       formaPagos: []));
