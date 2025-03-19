@@ -29,7 +29,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/loggo.png" # Cambia por la ruta de tu logo
+  image_path: "assets/loggo2.png" # Cambia por la ruta de tu logo
   #adaptive_icon_background: "#ffffff" # Fondo para Android
   #adaptive_icon_foreground: "assets/icon/app_icon_foreground.png" # Foreground (Android 8+)
 
