@@ -72,13 +72,14 @@ class DtoSchedule {
 
 class Pago {
   String fecha;
-
+  String tipo;
   double monto;
   List<FormaPago> formaPagos;
 
   Pago({
     required this.fecha,
     required this.monto,
+    required this.tipo,
     required this.formaPagos,
   });
 
@@ -104,25 +105,40 @@ class FormaPago {
   // Método toJson
   Map<String, dynamic> toJson() {
     return {
-      'tipo': tipo,
+      "tipo": "CON",
       'monto': monto,
     };
   }
 }
 
 class Cuota {
+  int idCuota;
   String fecha;
   double montoCuota;
   bool pagado;
 
-  Cuota({required this.fecha, required this.montoCuota, required this.pagado});
+  Cuota(
+      {required this.fecha,
+      required this.montoCuota,
+      required this.pagado,
+      required this.idCuota});
 
   // Método toJson
   Map<String, dynamic> toJson() {
     return {
       'fecha': fecha,
-      'tipo': montoCuota,
-      'monto': pagado,
+      'montoCuota': montoCuota,
+      'pagado': pagado,
     };
+  }
+
+  // Método para convertir JSON a objeto Persona
+  factory Cuota.fromJson(Map<String, dynamic> json) {
+    return Cuota(
+      idCuota: json['idCuota'] ?? 0,
+      fecha: json['fecha'] ?? "",
+      montoCuota: json['montoCuota'] ?? 0,
+      pagado: json['pagado'] ?? false,
+    );
   }
 }

@@ -90,6 +90,10 @@ class _BuscadorServiciosState extends State<BuscadorServicios> {
             onChanged:
                 _buscarServicio, // Llama al backend cuando el texto cambia
             validator: widget.validator, // Validador personalizado
+            onTap: () {
+              // Borra el contenido al hacer clic
+              widget.controller.clear();
+            },
           ),
           if (_buscando) CircularProgressIndicator(), // Indicador de carga
           if (_mostrarDropdown)

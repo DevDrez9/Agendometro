@@ -90,6 +90,10 @@ class _BuscadorEspecialistasState extends State<BuscadorEspecialistas> {
             onChanged:
                 _buscarClientes, // Llama al backend cuando el texto cambia
             validator: widget.validator, // Validador personalizado
+            onTap: () {
+              // Borra el contenido al hacer clic
+              widget.controller.clear();
+            },
           ),
           if (_buscando) CircularProgressIndicator(), // Indicador de carga
           if (_mostrarDropdown)
@@ -114,8 +118,10 @@ class _BuscadorEspecialistasState extends State<BuscadorEspecialistas> {
                               cliente.person.apellidoPaterno),
                           onTap: () {
                             setState(() {
-                              widget.controller.text = cliente.person
-                                  .nombre; // Rellena el campo con el nombre del cliente seleccionado
+                              widget.controller.text = cliente.person.nombre +
+                                  " " +
+                                  cliente.person
+                                      .apellidoPaterno; // Rellena el campo con el nombre del cliente seleccionado
                               _mostrarDropdown = false; // Oculta el dropdown
                             });
                             widget.onEspecialistaSeleccionado?.call(

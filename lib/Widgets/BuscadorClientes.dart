@@ -105,6 +105,10 @@ class _BuscadorClientesState extends State<BuscadorClientes> {
             onChanged:
                 _buscarClientes, // Llama al backend cuando el texto cambia
             validator: widget.validator, // Validador personalizado
+            onTap: () {
+              // Borra el contenido al hacer clic
+              widget.controller.clear();
+            },
           ),
           if (_buscando) CircularProgressIndicator(), // Indicador de carga
           if (_mostrarDropdown)
@@ -128,8 +132,10 @@ class _BuscadorClientesState extends State<BuscadorClientes> {
                               cliente.nombre + " " + cliente.apellidoPaterno),
                           onTap: () {
                             setState(() {
-                              widget.controller.text = cliente
-                                  .nombre; // Rellena el campo con el nombre del cliente seleccionado
+                              widget.controller.text = cliente.nombre +
+                                  " " +
+                                  cliente
+                                      .apellidoPaterno; // Rellena el campo con el nombre del cliente seleccionado
                               _mostrarDropdown = false; // Oculta el dropdown
                             });
                             widget.onClienteSeleccionado?.call(

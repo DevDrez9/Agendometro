@@ -6,6 +6,7 @@ import 'package:agendometro/Theme/AppTextStyle.dart';
 import 'package:agendometro/Theme/App_theme.dart';
 import 'package:agendometro/Utilidades/GlobalVariables.dart';
 import 'package:agendometro/Widgets/CardCitas.dart';
+import 'package:agendometro/Widgets/CronogramaVerPagar.dart';
 import 'package:agendometro/Widgets/PagarAccion.dart';
 import 'package:agendometro/Widgets/TratamientoAccion.dart';
 import 'package:flutter/material.dart';
@@ -77,32 +78,13 @@ class _CitasPageState extends State<CitasPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: listaPendientes
-                    .map(
-                        (pendiente) => cardCitas(pendiente, onPressed: (value) {
-                              showFullScreenPagarAccion(
-                                  context,
-                                  pendiente.service_name,
-                                  pendiente.employee_nombre +
-                                      " " +
-                                      pendiente.employee_apellido_paterno,
-                                  pendiente.customer_nombre +
-                                      " " +
-                                      pendiente.customer_apellido_paterno,
-                                  pendiente.price.toString(),
-                                  0);
-                            }, onPressedTratamiento: (value) {
-                              showFullScreenTratamiento(
-                                  context,
-                                  pendiente.service_name,
-                                  pendiente.employee_nombre +
-                                      " " +
-                                      pendiente.employee_apellido_paterno,
-                                  pendiente.customer_nombre +
-                                      " " +
-                                      pendiente.customer_apellido_paterno,
-                                  pendiente.price.toString(),
-                                  0);
-                            }))
+                    .map((pendiente) =>
+                        cardCitas(pendiente, onPressedPago: (value) {
+                          CronogramaVerPagar(context, pendiente);
+                        }, onPressedTratamiento: (value) {
+                          Navigator.pushNamed(context, 'tratamiento',
+                              arguments: value);
+                        }))
                     .toList(),
               ),
             ))

@@ -41,7 +41,7 @@ class CronogramaDialog extends StatefulWidget {
 }
 
 class _CronogramaDialogState extends State<CronogramaDialog> {
-  late List<Cuota> listaCuotas;
+  late List<Cuota> listaCuotas = [];
   late double costoTotal;
   final _formKeyPago = GlobalKey<FormState>();
   late List<TextEditingController> controllers; // Lista de controladores
@@ -49,26 +49,38 @@ class _CronogramaDialogState extends State<CronogramaDialog> {
   @override
   void initState() {
     super.initState();
-    costoTotal = widget.customer.price.toDouble();
-    listaCuotas = widget.customer.dtoSchedules
-        .map((sesion) => Cuota(
-              fecha: sesion.scheduleStartTime,
-              montoCuota: 0,
-              pagado: false,
-            ))
-        .toList();
-    listaCuotas[0].montoCuota = widget.customer.pagos[0].monto;
-    listaCuotas[0].pagado = true;
 
+    costoTotal = widget.customer.price.toDouble();
+
+    listaCuotas = List.generate(
+      widget.customer.sessions,
+      (index) {
+        // Verifica si dtoSchedules[index] existe
+        final schedule = widget.customer.dtoSchedules.length > index
+            ? widget.customer.dtoSchedules[index]
+            : null;
+
+        // Obtén la fecha o usa un valor predeterminado si es nulo
+        final fecha = schedule?.scheduleStartTime ?? "";
+
+        // Si es la primera cuota, usa el monto del pago; de lo contrario, usa 0
+        double montoCuota = index == 0 && widget.customer.pagos.isNotEmpty
+            ? widget.customer.pagos[0].monto
+            : 0;
+
+        // Si es la primera cuota, márcala como pagada; de lo contrario, no
+        final pagado = index == 0;
+
+        return Cuota(
+            fecha: fecha, montoCuota: montoCuota, pagado: pagado, idCuota: 0);
+      },
+    );
     controllers = List.generate(
       widget.customer.sessions,
-      (index) => TextEditingController(
-        text: index == 0
-            ? listaCuotas[index].montoCuota.toString()
-            : listaCuotas[index].montoCuota == 0
-                ? ""
-                : listaCuotas[index].montoCuota.toString(),
-      ),
+      (index) => index == 0
+          ? TextEditingController(
+              text: widget.customer.pagos[0].monto.toString())
+          : TextEditingController(text: ""),
     );
   }
 
@@ -142,20 +154,14 @@ class _CronogramaDialogState extends State<CronogramaDialog> {
                                           icon: Icons.attach_money_outlined,
                                           horizontal: 100,
                                           isNumberOnly: true,
-                                          onChanged: (value) {
-                                            listaCuotas[index].montoCuota =
-                                                double.parse(value);
-                                          })
+                                        )
                                       : textInput2(
                                           controller: controllers[index],
                                           labelText: "Monto a pagar",
                                           icon: Icons.attach_money_outlined,
                                           horizontal: 100,
                                           isNumberOnly: true,
-                                          onChanged: (value) {
-                                            listaCuotas[index].montoCuota =
-                                                double.parse(value);
-                                          })
+                                        )
                                 ],
                               );
                             }),
@@ -210,9 +216,16 @@ class _CronogramaDialogState extends State<CronogramaDialog> {
                           double precio = widget.customer.price;
                           double total = 0;
 
-                          for (var cuota in listaCuotas) {
-                            total = total + cuota.montoCuota;
+                          int index = 0;
+                          for (var controlador in controllers) {
+                            listaCuotas[index].montoCuota =
+                                double.tryParse(controlador.text) ?? 0;
+
+                            total = total +
+                                (double.tryParse(controlador.value.text) ?? 0);
+                            index++;
                           }
+
                           if (precio == total) {
                             print("Servicio");
                             setState(() {

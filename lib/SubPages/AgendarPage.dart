@@ -20,14 +20,13 @@ import 'package:agendometro/Widgets/CronogramaPagar.dart';
 import 'package:agendometro/Widgets/CustomDropdown.dart';
 import 'package:agendometro/Widgets/DatePicker.dart';
 import 'package:agendometro/Widgets/DropdownHoras.dart';
-import 'package:agendometro/Widgets/Pagar.dart';
-import 'package:agendometro/Widgets/PagarCronograma.dart';
 import 'package:agendometro/Widgets/textInput.dart';
 import 'package:flutter/material.dart';
 import 'package:http/io_client.dart';
 
 class AgendarPage extends StatefulWidget {
-  const AgendarPage({super.key});
+  final ClienteClass? cliente; // Parámetro opcional
+  const AgendarPage({super.key, this.cliente});
 
   @override
   State<AgendarPage> createState() => _AgendarPageState();
@@ -60,6 +59,12 @@ class _AgendarPageState extends State<AgendarPage> {
     // TODO: implement initState
     super.initState();
     controllerSesiones.text = "1";
+    if (widget.cliente != null) {
+      print("hola");
+      clienteSelect = widget.cliente!;
+      controllerCliente.text =
+          widget.cliente!.nombre + " " + widget.cliente!.apellidoPaterno;
+    }
   }
 
   @override
@@ -222,7 +227,7 @@ class _AgendarPageState extends State<AgendarPage> {
                     color: Color.fromARGB(59, 230, 57, 71),
                     borderRadius: BorderRadius.all(Radius.circular(5))),
                 child: Text(
-                  "Seleccione al menos una cita.",
+                  "Llene todas las sesiones.",
                   style: TextStyle(color: AppThemeColors.error),
                 ),
               )
@@ -247,7 +252,8 @@ class _AgendarPageState extends State<AgendarPage> {
             text: "Agendar",
             onPressed: () {
               if (_formKeyAgendar.currentState!.validate()) {
-                if (listaCitas[0].scheduleStartTime != "") {
+                print(listaCitas.length);
+                if (validarFechas()) {
                   LoadingDialog.showLoadingDialog(context, "Registrando...");
                   setState(() {
                     validarCitas = false;
@@ -266,9 +272,10 @@ class _AgendarPageState extends State<AgendarPage> {
                     Pago pagarSelect = Pago(
                         fecha: listaCitas[0].scheduleStartTime,
                         monto: double.parse(controllerPagar.text),
+                        tipo: "Cuenta por Cobrar",
                         formaPagos: [
                           FormaPago(
-                              tipo: "CON",
+                              tipo: "Cuenta por Cobrar",
                               monto: double.parse(controllerPagar.text))
                         ]);
                     listaPago.add(pagarSelect);
@@ -303,6 +310,18 @@ class _AgendarPageState extends State<AgendarPage> {
     )));
   }
 
+  bool validarFechas() {
+    print(listaCitas.length);
+    for (var fechaCita in listaCitas) {
+      print(fechaCita.scheduleStartTime);
+      if (fechaCita.scheduleStartTime == "" ||
+          fechaCita.scheduleStartTime == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<List<ClienteClass>> buscarClientes(String query) async {
     // Lista de clientes de ejemplo (esto debería ser reemplazado por una llamada real al backend)
 
@@ -323,7 +342,11 @@ class _AgendarPageState extends State<AgendarPage> {
             "/persona/v1/buscarempresatexto-simplificado"),
         headers: headers,
         body: json.encode(createSearchJson(
-            idEmpresa: 111, page: 0, size: 10, textoBusqueda: query)),
+            idEmpresa: GlobalVariables
+                .instance.mainUsuario.persona.idempresa.idempresa,
+            page: 0,
+            size: 10,
+            textoBusqueda: query)),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -333,7 +356,11 @@ class _AgendarPageState extends State<AgendarPage> {
           // Extrae el objeto "tecnico"
           print("Json" +
               createSearchJson(
-                      idEmpresa: 111, page: 0, size: 10, textoBusqueda: query)
+                      idEmpresa: GlobalVariables
+                          .instance.mainUsuario.persona.idempresa.idempresa,
+                      page: 0,
+                      size: 10,
+                      textoBusqueda: query)
                   .toString());
           print("Servidor " + jsonData.toString());
 
@@ -405,7 +432,11 @@ class _AgendarPageState extends State<AgendarPage> {
         Uri.parse(GlobalVariables.url12 + "/servicios/search"),
         headers: headers,
         body: json.encode(createSearchJson(
-            idEmpresa: 111, page: 0, size: 10, textoBusqueda: query)),
+            idEmpresa: GlobalVariables
+                .instance.mainUsuario.persona.idempresa.idempresa,
+            page: 0,
+            size: 10,
+            textoBusqueda: query)),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -413,7 +444,14 @@ class _AgendarPageState extends State<AgendarPage> {
           String body = utf8.decode(response.bodyBytes);
           final jsonData = jsonDecode(body);
           // Extrae el objeto "tecnico"
-          print("Servidor " + jsonData.toString());
+          print(json.encode(createSearchJson(
+                  idEmpresa: GlobalVariables
+                      .instance.mainUsuario.persona.idempresa.idempresa,
+                  page: 0,
+                  size: 10,
+                  textoBusqueda: query)) +
+              " Servidor " +
+              jsonData.toString());
 
           if (jsonData['content'] is List) {
             listaClientes = (jsonData['content'] as List)
@@ -465,8 +503,6 @@ class _AgendarPageState extends State<AgendarPage> {
 
     List<EspecialistaClass> listaEspecialistas = [];
 
-    print(GlobalVariables.instance.mainUsuario.token);
-
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + GlobalVariables.instance.mainUsuario.token
@@ -481,7 +517,11 @@ class _AgendarPageState extends State<AgendarPage> {
         Uri.parse(GlobalVariables.url12 + "/employees/search"),
         headers: headers,
         body: json.encode(createSearchJson(
-            idEmpresa: 111, page: 0, size: 10, textoBusqueda: query)),
+            idEmpresa: GlobalVariables
+                .instance.mainUsuario.persona.idempresa.idempresa,
+            page: 0,
+            size: 10,
+            textoBusqueda: query)),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {

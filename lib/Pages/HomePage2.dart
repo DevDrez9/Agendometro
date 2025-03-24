@@ -1,4 +1,4 @@
-// HomePage2.dart
+import 'package:agendometro/Models/ClienteClass.dart';
 import 'package:agendometro/SubPages/AgendarPage.dart';
 import 'package:agendometro/SubPages/CitasPage.dart';
 import 'package:agendometro/SubPages/HistorialPage.dart';
@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 
 class HomePage2 extends StatefulWidget {
   final int initialTab; // Parámetro opcional con valor predeterminado
+  final ClienteClass? cliente; // Parámetro opcional
 
-  const HomePage2({Key? key, this.initialTab = 0})
+  const HomePage2({Key? key, this.initialTab = 0, this.cliente})
       : super(key: key); // Valor predeterminado: 0
 
   @override
@@ -59,9 +60,11 @@ class _HomePage2State extends State<HomePage2>
       body: TabBarView(
         controller: _tabController,
         physics: NeverScrollableScrollPhysics(), // Deshabilita el swipe
-        children: const [
+        children: [
           CitasPage(), // Contenido de la pestaña 1
-          AgendarPage(), // Contenido de la pestaña 2
+          AgendarPage(
+            cliente: widget.cliente,
+          ), // Contenido de la pestaña 2
           HistorialPage(), // Contenido de la pestaña 3
         ],
       ),

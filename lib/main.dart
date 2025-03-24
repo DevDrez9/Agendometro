@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:agendometro/Models/PendientesClass.dart';
 import 'package:agendometro/Pages/HomePage.dart';
 import 'package:agendometro/Pages/HomePage2.dart';
 import 'package:agendometro/Pages/LoginPage.dart';
 import 'package:agendometro/Pages/RegistrarPage.dart';
+import 'package:agendometro/Pages/TratamientoPage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,6 +30,7 @@ class MainApp extends StatelessWidget {
         'home': (BuildContext context) => HomePage(),
         'home2': (BuildContext context) => HomePage2(),
         'registrar': (BuildContext context) => RegistrarPage(),
+        'tratamiento': (BuildContext context) => TratamientoPage(),
       },
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

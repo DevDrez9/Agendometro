@@ -3,13 +3,12 @@ import 'package:agendometro/Theme/AppTextStyle.dart';
 import 'package:agendometro/Theme/AppThemeColors.dart';
 import 'package:agendometro/Theme/App_theme.dart';
 import 'package:agendometro/Widgets/BotonSeccion.dart';
-import 'package:agendometro/Widgets/Pagar.dart';
 import 'package:agendometro/Widgets/PagarAccion.dart';
 import 'package:flutter/material.dart';
 
 Widget cardCitas(
   PendientesClass pendientes, {
-  required Function(PendientesClass) onPressed,
+  required Function(PendientesClass) onPressedPago,
   required Function(PendientesClass) onPressedTratamiento,
 }) {
   String transformarFecha(String fechaOriginal) {
@@ -119,7 +118,7 @@ Widget cardCitas(
                         color: AppThemeColors.pago,
                         text: "Pagos",
                         onPressed: () {
-                          onPressed(pendientes);
+                          onPressedPago(pendientes);
                         },
                       )),
                   Container(

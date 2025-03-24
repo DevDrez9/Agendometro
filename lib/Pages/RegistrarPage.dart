@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:agendometro/Models/ClienteClass.dart';
 import 'package:agendometro/Pages/HomePage.dart';
 import 'package:agendometro/Pages/HomePage2.dart';
 import 'package:agendometro/Theme/AppThemeColors.dart';
@@ -88,12 +89,6 @@ class _RegistrarPageState extends State<RegistrarPage> {
                   DatePickerField2(
                     controller: fechaController,
                     label: "Fecha Naciemiento",
-                    validator: (value) {
-                      if (value!.isEmpty || value == null) {
-                        return "Ingrese fecha de nacimiento";
-                      }
-                      return null;
-                    },
                   ),
                   SizedBox(
                     height: 20,
@@ -155,6 +150,16 @@ class _RegistrarPageState extends State<RegistrarPage> {
           // Extrae el objeto "tecnico"
           print("Servidor " + jsonData.toString());
 
+          ClienteClass clienteNuevo = ClienteClass(
+              idEmpresa: GlobalVariables
+                  .instance.mainUsuario.persona.idempresa.idempresa,
+              usuarioAlta: "Movil",
+              idPersona: jsonData["ENTITY"]["idPersona"],
+              fechaAlta: 0,
+              apellidoPaterno: paternoController.text,
+              apellidoMaterno: maternoController.text,
+              nombre: nombreController.text);
+
           await Alerta(
               context, "Registrado", "Se registro correctamente al usuario");
 
@@ -163,6 +168,7 @@ class _RegistrarPageState extends State<RegistrarPage> {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => HomePage2(
                     initialTab: 1,
+                    cliente: clienteNuevo,
                   )));
 
           //return usuario;
